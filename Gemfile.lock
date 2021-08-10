@@ -1,11 +1,36 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    activemodel (6.1.4)
+      activesupport (= 6.1.4)
+    activerecord (6.1.4)
+      activemodel (= 6.1.4)
+      activesupport (= 6.1.4)
+    activesupport (6.1.4)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 1.6, < 2)
+      minitest (>= 5.1)
+      tzinfo (~> 2.0)
+      zeitwerk (~> 2.3)
+    concurrent-ruby (1.1.9)
+    i18n (1.8.10)
+      concurrent-ruby (~> 1.0)
+    minitest (5.14.4)
+    public_suffix (4.0.6)
+    tzinfo (2.0.4)
+      concurrent-ruby (~> 1.0)
+    validate_url (1.0.13)
+      activemodel (>= 3.0.0)
+      public_suffix
+    zeitwerk (2.4.2)
 
 PLATFORMS
   x86_64-darwin-20
 
 DEPENDENCIES
+  activemodel
+  activerecord (~> 6.1)
+  validate_url (~> 1.0)
 
 RUBY VERSION
    ruby 3.0.2p107
