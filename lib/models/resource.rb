@@ -3,7 +3,10 @@ require 'uri'
 module Fetch
   module Model
     class Resource
-      attr_accessor :uri
+      attr_accessor :uri,
+                    :response,
+                    :base_directory,
+                    :filename
     
       def initialize(full_url)
         self.uri = full_url

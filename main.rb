@@ -14,4 +14,16 @@ ARGV.each do |uri|
   end
 end
 
-puts resources
+services = [
+  Fetch::Service::LoadContent,
+  Fetch::Service::StoreResponseHtml
+]
+
+resources.each do |resource|
+  services.each do |service|
+    service_with_resource = service.new(resource)
+    service_with_resource.process
+    resource = service_with_resource.result
+  end
+  puts "Webpage #{resource.uri.host}/#{resource.uri.path}\n\tcan be accessed from #{File.join resource.base_directory, resource.filename}"
+end
