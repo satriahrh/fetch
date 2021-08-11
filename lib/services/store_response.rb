@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
 module Fetch
   module Service
+    # StoreResponse is base class of storing/caching
+    # a http response to file
     class StoreResponse < Fetch::Service::Base
       def process
         split_directory_from_resource_uri
@@ -7,6 +11,8 @@ module Fetch
         create_filepath
         store_to_filepath
       end
+
+      protected
 
       def filename
         raise NotImplementedError
@@ -24,9 +30,7 @@ module Fetch
         @resource.base_directory = Dir.getwd
         @directory_splitted.each do |dirname|
           @resource.base_directory = File.join @resource.base_directory, dirname
-          unless Dir.exist? @resource.base_directory
-            Dir.mkdir @resource.base_directory
-          end
+          Dir.mkdir @resource.base_directory unless Dir.exist? @resource.base_directory
         end
       end
 
@@ -36,16 +40,18 @@ module Fetch
       end
 
       def store_to_filepath
-        if File.exist? @filepath
-          File.delete @filepath
-        end
-        file = File.new(@filepath, File::CREAT|File::RDWR, 777)
+        File.delete @filepath if File.exist? @filepath
+        file = File.new(@filepath, File::CREAT | File::RDWR, 777)
         file.write(@resource.response.body)
         file.close
       end
     end
 
+    # StoreResponseHtml is to storing/caching specifically
+    # html response
     class StoreResponseHtml < Fetch::Service::StoreResponse
+      protected
+
       def filename
         'index.html'
       end

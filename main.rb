@@ -1,17 +1,16 @@
-require './lib/lib.rb'
+# frozen_string_literal: true
 
-if ARGV.length == 0
-  Fetch::Error.exit_with_message "No url(s) supplied"
-end
+require './lib/lib'
+
+Fetch::Error.exit_with_message 'No url(s) supplied' if
+  ARGV.empty?
 
 resources = []
 ARGV.each do |uri|
-  begin
-    resource = Fetch::Model::Resource.new uri
-    resources << resource
-  rescue Fetch::Error::ResourceInvalidURI => e
-    Fetch::Error.exit_with_message "Invalid uri for \"#{uri}\", #{e.message}"
-  end
+  resource = Fetch::Model::Resource.new uri
+  resources << resource
+rescue Fetch::Error::ResourceInvalidURI => e
+  Fetch::Error.exit_with_message "Invalid uri for \"#{uri}\", #{e.message}"
 end
 
 services = [
@@ -25,5 +24,6 @@ resources.each do |resource|
     service_with_resource.process
     resource = service_with_resource.result
   end
-  puts "Webpage #{resource.uri.host}/#{resource.uri.path}\n\tcan be accessed from #{File.join resource.base_directory, resource.filename}"
+  puts "Webpage #{resource.uri.host}/#{resource.uri.path}\n" \
+    + "\tcan be accessed from #{File.join resource.base_directory, resource.filename}"
 end

@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 module Fetch
   module Service
+    # Base
     class Base
-      def initialize resource
+      def initialize(resource)
         @resource = resource
       end
 
@@ -15,3 +18,5 @@ module Fetch
     end
   end
 end
+
+Dir['./lib/services/*'].each { |file| require file }

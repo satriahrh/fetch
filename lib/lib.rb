@@ -1,5 +1,5 @@
-require './lib/errors.rb'
-require './lib/models/resource.rb'
-require './lib/services/service'
-require './lib/services/load_content'
-require './lib/services/store_response'
+# frozen_string_literal: true
+
+require_relative 'errors'
+Dir['./lib/models/*'].each { |file| require file }
+require_relative 'services'
