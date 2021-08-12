@@ -5,6 +5,11 @@ module Fetch
     # StoreResponse is base class of storing/caching
     # a http response to file
     class StoreResponse < Fetch::Service::Base
+      def before_process
+        raise 'response body is empty' if
+          @resource&.response&.body&.empty?
+      end
+
       def process
         split_directory_from_resource_uri
         create_base_directory
@@ -51,6 +56,13 @@ module Fetch
     # html response
     class StoreResponseHtml < Fetch::Service::StoreResponse
       protected
+
+      def before_process
+        super
+        content_type = @resource.response.content_type
+        raise "not an html response, found #{content_type}" unless
+          content_type == 'text/html'
+      end
 
       def filename
         'index.html'
