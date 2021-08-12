@@ -8,12 +8,15 @@ module Fetch
         @resource = resource
       end
 
-      def process
-        raise NotImplementedError
+      def run
+        process
+        @resource
       end
 
-      def result
-        @resource
+      protected
+
+      def process
+        raise NotImplementedError
       end
     end
   end

@@ -21,8 +21,7 @@ services = [
 resources.each do |resource|
   services.each do |service|
     service_with_resource = service.new(resource)
-    service_with_resource.process
-    resource = service_with_resource.result
+    resource = service_with_resource.run
   end
   puts "Webpage #{resource.uri.host}/#{resource.uri.path}\n" \
     + "\tcan be accessed from #{File.join resource.base_directory, resource.filename}"
