@@ -21,6 +21,7 @@ module Fetch
           @resp.instance_of? Net::HTTPOK
 
         @resource.response = @resp
+        @resource.metadata[:last_fetch] = Time.now
       end
     end
   end

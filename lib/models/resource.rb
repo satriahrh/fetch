@@ -11,12 +11,14 @@ module Fetch
                     :base_directory,
                     :filename,
                     :images,
-                    :links
+                    :links,
+                    :metadata
 
       attr_reader :uri
 
       def initialize(full_url)
         self.uri = full_url
+        self.metadata = {}
       end
 
       def uri=(new_value)

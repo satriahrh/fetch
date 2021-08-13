@@ -21,6 +21,8 @@ module Fetch
       def after_process
         @resource.images = @imgs
         @resource.links = @links
+        @resource.metadata[:num_links] = @links.length
+        @resource.metadata[:num_images] = @imgs.length
       end
 
       private

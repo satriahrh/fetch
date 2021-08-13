@@ -24,8 +24,9 @@ resources.each do |resource|
     service_with_resource = service.new(resource)
     resource = service_with_resource.run
   end
-  puts "Webpage #{resource.uri}\n" \
-    + "\tcan be accessed from #{File.join resource.base_directory, resource.filename}\n" \
-    + "\ttotal images: #{resource.images.keys.length}\n" \
-    + "\ttotal links: #{resource.links.keys.length}"
+  puts "#{resource.uri}\n" \
+    + "\tcache file path\t\t: #{File.join resource.base_directory, resource.filename}\n" \
+    + "\tnumber of links\t\t: #{resource.metadata[:num_links]}\n" \
+    + "\tnumber of images\t: #{resource.metadata[:num_images]}\n" \
+    + "\tlast fetch\t\t: #{resource.metadata[:last_fetch]}"
 end
