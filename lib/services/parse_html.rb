@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'nokogiri'
 
 module Fetch
@@ -45,6 +47,7 @@ module Fetch
         @doc_links.each do |doc_link|
           href = doc_link['href']
           next unless href
+
           @links[href] = 0 unless @links[href]
           @links[href] += 1
         end
@@ -54,7 +57,7 @@ module Fetch
         return false unless src && !src.empty?
 
         # due to https://gist.github.com/khanzadimahdi/bab8a3416bdb764b9eda5b38b35735b8
-        data_uri_schema_regex = %r{^data:((?:\w+\/(?:(?!;).)+)?)((?:;[\w\W]*?[^;])*),(.+)$}
+        data_uri_schema_regex = %r{^data:((?:\w+/(?:(?!;).)+)?)((?:;[\w\W]*?[^;])*),(.+)$}
         return false if
           src.match data_uri_schema_regex
 

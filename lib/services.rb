@@ -28,8 +28,7 @@ module Fetch
         raise NotImplementedError
       end
 
-      def after_process
-      end
+      def after_process; end
     end
   end
 end
