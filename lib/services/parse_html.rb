@@ -34,7 +34,7 @@ module Fetch
         @imgs = {}
         @doc_imgs.each do |doc_img|
           src = doc_img['src']
-          next unless is_a_path? src
+          next unless a_path? src
 
           @imgs[src] = 0 unless @imgs[src]
           @imgs[src] += 1
@@ -53,7 +53,7 @@ module Fetch
         end
       end
 
-      def is_a_path?(src)
+      def a_path?(src)
         return false unless src && !src.empty?
 
         # due to https://gist.github.com/khanzadimahdi/bab8a3416bdb764b9eda5b38b35735b8
