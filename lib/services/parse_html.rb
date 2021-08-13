@@ -34,7 +34,6 @@ module Fetch
         @imgs = {}
         @doc_imgs.each do |doc_img|
           src = doc_img['src']
-          next unless a_path? src
 
           @imgs[src] = 0 unless @imgs[src]
           @imgs[src] += 1
@@ -51,17 +50,6 @@ module Fetch
           @links[href] = 0 unless @links[href]
           @links[href] += 1
         end
-      end
-
-      def a_path?(src)
-        return false unless src && !src.empty?
-
-        # due to https://gist.github.com/khanzadimahdi/bab8a3416bdb764b9eda5b38b35735b8
-        data_uri_schema_regex = %r{^data:((?:\w+/(?:(?!;).)+)?)((?:;[\w\W]*?[^;])*),(.+)$}
-        return false if
-          src.match data_uri_schema_regex
-
-        true
       end
     end
   end
