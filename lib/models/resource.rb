@@ -9,7 +9,9 @@ module Fetch
     class Resource
       attr_accessor :response,
                     :base_directory,
-                    :filename
+                    :filename,
+                    :images,
+                    :links
 
       attr_reader :uri
 

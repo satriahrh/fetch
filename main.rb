@@ -15,7 +15,8 @@ end
 
 services = [
   Fetch::Service::LoadContent,
-  Fetch::Service::StoreResponseHtml
+  Fetch::Service::StoreResponseHtml,
+  Fetch::Service::ParseHTML
 ]
 
 resources.each do |resource|
@@ -24,5 +25,7 @@ resources.each do |resource|
     resource = service_with_resource.run
   end
   puts "Webpage #{resource.uri.host}/#{resource.uri.path}\n" \
-    + "\tcan be accessed from #{File.join resource.base_directory, resource.filename}"
+    + "\tcan be accessed from #{File.join resource.base_directory, resource.filename}\n" \
+    + "\ttotal images: #{resource.images.keys.length}\n" \
+    + "\ttotal links: #{resource.links.keys.length}"
 end
