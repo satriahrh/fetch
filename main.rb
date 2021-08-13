@@ -14,9 +14,11 @@ rescue Fetch::Error::ResourceInvalidURI => e
 end
 
 services = [
-  Fetch::Service::LoadContent,
+  Fetch::Service::LoadHTML,
   Fetch::Service::StoreResponseHtml,
-  Fetch::Service::ParseHTML
+  Fetch::Service::ParseHTML,
+  Fetch::Service::LoadImages,
+  Fetch::Service::StoreResponseImages
 ]
 
 resources.each do |resource|

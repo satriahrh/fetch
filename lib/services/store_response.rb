@@ -68,5 +68,9 @@ module Fetch
         'index.html'
       end
     end
+
+    # StoreResponseImages is to store any images that is already loaded
+    class StoreResponseImages < Fetch::Service::StoreResponse
+    end
   end
 end

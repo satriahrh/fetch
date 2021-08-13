@@ -4,8 +4,8 @@ require 'net/http'
 
 module Fetch
   module Service
-    # LoadContent is to fetch the content from given URI
-    class LoadContent < Fetch::Service::Base
+    # LoadHTML is to fetch the content from given URI
+    class LoadHTML < Fetch::Service::Base
       def before_process
         raise 'resource should be an instance of Fetch::Model::Resource' unless
           [URI::HTTPS, URI::HTTP].include? @resource&.uri.class
@@ -23,6 +23,9 @@ module Fetch
         @resource.response = @resp
         @resource.metadata[:last_fetch] = Time.now
       end
+    end
+
+    class LoadImages < Fetch::Service::Base
     end
   end
 end
