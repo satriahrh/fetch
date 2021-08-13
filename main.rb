@@ -24,7 +24,7 @@ resources.each do |resource|
     service_with_resource = service.new(resource)
     resource = service_with_resource.run
   end
-  puts "Webpage #{resource.uri.host}/#{resource.uri.path}\n" \
+  puts "Webpage #{resource.uri}\n" \
     + "\tcan be accessed from #{File.join resource.base_directory, resource.filename}\n" \
     + "\ttotal images: #{resource.images.keys.length}\n" \
     + "\ttotal links: #{resource.links.keys.length}"
