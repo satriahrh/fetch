@@ -8,9 +8,10 @@ module Fetch
     # chain of command in this program.
     class Resource
       attr_accessor :response,
+                    :relative_filepath,
                     :base_directory,
-                    :filename,
                     :images,
+                    :images_content,
                     :links,
                     :metadata
 
@@ -19,12 +20,21 @@ module Fetch
       def initialize(full_url)
         self.uri = full_url
         self.metadata = {}
+        self.images = []
+        self.images_content = {}
       end
 
       def uri=(new_value)
-        @uri = URI.parse new_value
+        if [URI::HTTPS, URI::HTTP].include? new_value.class
+          @uri = new_value
+        else
+          @uri = URI.parse new_value
+        end
+
         raise Fetch::Error::ResourceInvalidURI unless
           [URI::HTTPS, URI::HTTP].include? @uri.class
+
+        @uri
       end
 
       def to_s

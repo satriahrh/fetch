@@ -27,8 +27,8 @@ resources.each do |resource|
     resource = service_with_resource.run
   end
   puts "#{resource.uri}\n" \
-    + "\tcache file path\t\t: #{File.join resource.base_directory, resource.filename}\n" \
+    + "\tcache file path\t\t: #{File.join resource.base_directory, resource.relative_filepath}\n" \
     + "\tnumber of links\t\t: #{resource.metadata[:num_links]}\n" \
     + "\tnumber of images\t: #{resource.metadata[:num_images]}\n" \
-    + "\tlast fetch\t\t: #{resource.metadata[:last_fetch]}"
+    + "\tlast fetch\t\t: #{resource.metadata[:last_fetch]}\n"
 end

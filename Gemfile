@@ -7,6 +7,7 @@ ruby '3.0.2'
 gem 'nokogiri'
 
 group :development do
+  gem 'pry', '~> 0.13.1'
   gem 'rubocop'
   gem 'solargraph'
 end

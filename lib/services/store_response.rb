@@ -11,44 +11,33 @@ module Fetch
       end
 
       def process
-        split_directory_from_resource_uri
-        create_base_directory
-        create_filepath
-        store_to_filepath
+        relative_dirname, filename = File.split relative_filepath
+        base_relative_directory = base_directory
+        relative_dirname.split('/').each do |dirname|
+          base_relative_directory = File.join base_relative_directory, dirname
+          Dir.mkdir base_relative_directory unless Dir.exist? base_relative_directory
+        end
+
+        absolute_filepath = File.join base_relative_directory, filename
+        # write file
+        File.delete absolute_filepath if File.exist? absolute_filepath
+        file = File.new(absolute_filepath, File::CREAT | File::RDWR, 777)
+        file.write(data)
+        file.close
       end
 
       protected
 
-      def filename
+      def relative_filepath
         raise NotImplementedError
       end
 
-      private
-
-      def split_directory_from_resource_uri
-        host = @resource.uri.host
-        paths = @resource.uri.path.split '/'
-        @directory_splitted = [host] + paths
+      def base_directory
+        raise NotImplementedError
       end
 
-      def create_base_directory
-        @resource.base_directory = Dir.getwd
-        @directory_splitted.each do |dirname|
-          @resource.base_directory = File.join @resource.base_directory, dirname
-          Dir.mkdir @resource.base_directory unless Dir.exist? @resource.base_directory
-        end
-      end
-
-      def create_filepath
-        @resource.filename = filename
-        @filepath = File.join @resource.base_directory, @resource.filename
-      end
-
-      def store_to_filepath
-        File.delete @filepath if File.exist? @filepath
-        file = File.new(@filepath, File::CREAT | File::RDWR, 777)
-        file.write(@resource.response.body)
-        file.close
+      def data
+        raise NotImplementedError
       end
     end
 
@@ -64,13 +53,50 @@ module Fetch
           content_type == 'text/html'
       end
 
-      def filename
-        'index.html'
+      def relative_filepath
+        @resource.relative_filepath ||= File.join @resource.uri.host, @resource.uri.path, 'index.html'
+      end
+
+      def base_directory
+        @resource.base_directory ||= Dir.getwd
+      end
+
+      def data
+        @resource.response.body
+      end
+    end
+
+    class StoreResponseImage < Fetch::Service::StoreResponse
+      private
+
+      def before_process
+      end
+      
+      def relative_filepath
+        @resource.uri.path
+      end
+
+      def base_directory
+        @resource.base_directory
+      end
+
+      def data
+        @resource.response.body
       end
     end
 
     # StoreResponseImages is to store any images that is already loaded
-    class StoreResponseImages < Fetch::Service::StoreResponse
+    class StoreResponseImages < Fetch::Service::Base
+      def before_process
+      end
+
+      def process
+        image_base_directtory = File.join @resource.base_directory, File.split(@resource.relative_filepath).first
+        @resource.images_content.each do |image_path, image_resource|
+          image_resource.base_directory = image_base_directtory
+          Fetch::Service::StoreResponseImage.new(image_resource).process
+        end
+      end
     end
   end
 end
