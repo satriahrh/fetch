@@ -21,7 +21,7 @@ module Fetch
       end
 
       def after_process
-        relative_dir, _ = File.split @resource.relative_filepath
+        relative_dir, = File.split @resource.relative_filepath
         Fetch::Helper::StoreToFile.new(
           'meta.json',
           JSON.generate(@resource.metadata),

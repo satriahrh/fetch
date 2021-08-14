@@ -25,7 +25,7 @@ services = if ARGV[0] == '--metadata'
            else
              [
                Fetch::Service::LoadHTMLFromServer,
-               Fetch::Service::LoadImages,
+               Fetch::Service::LoadAndStoreImages,
                Fetch::Service::StoreResponse
              ]
            end
@@ -37,7 +37,7 @@ resources.each do |resource|
   end
   puts "#{resource.uri}\n" \
     + "\tcache file path\t\t: #{File.join resource.base_directory, resource.relative_filepath}\n" \
-    + "\tnumber of links\t\t: #{resource.metadata["num_links"]}\n" \
-    + "\tnumber of images\t: #{resource.metadata["num_images"]}\n" \
-    + "\tlast fetch\t\t: #{resource.metadata["last_fetch"]}\n"
+    + "\tnumber of links\t\t: #{resource.metadata['num_links']}\n" \
+    + "\tnumber of images\t: #{resource.metadata['num_images']}\n" \
+    + "\tlast fetch\t\t: #{resource.metadata['last_fetch']}\n"
 end
