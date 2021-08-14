@@ -5,21 +5,30 @@ require './lib/lib'
 Fetch::Error.exit_with_message 'No url(s) supplied' if
   ARGV.empty?
 
+uris = ARGV[0] == '--metadata' ? ARGV[1..] : ARGV
+
+Fetch::Error.exit_with_message 'No url(s) supplied' if
+  uris.empty?
+
 resources = []
-ARGV.each do |uri|
+uris.each do |uri|
   resource = Fetch::Model::Resource.new uri
   resources << resource
 rescue Fetch::Error::ResourceInvalidURI => e
   Fetch::Error.exit_with_message "Invalid uri for \"#{uri}\", #{e.message}"
 end
 
-services = [
-  Fetch::Service::LoadHTML,
-  Fetch::Service::StoreResponseHtml,
-  Fetch::Service::ParseHTML,
-  Fetch::Service::LoadImages,
-  Fetch::Service::StoreResponseImages
-]
+if ARGV[0] == '--metadata'
+  services = [
+    Fetch::Service::LoadHTMLFromCache
+  ]
+else
+  services = [
+    Fetch::Service::LoadHTMLFromServer,
+    Fetch::Service::LoadImages,
+    Fetch::Service::StoreResponse
+  ]
+end
 
 resources.each do |resource|
   services.each do |service|

@@ -7,7 +7,7 @@ module Fetch
     # Resource is the object we will be using in the
     # chain of command in this program.
     class Resource
-      attr_accessor :response,
+      attr_accessor :content,
                     :relative_filepath,
                     :base_directory,
                     :images,
@@ -19,6 +19,8 @@ module Fetch
 
       def initialize(full_url)
         self.uri = full_url
+        self.relative_filepath = File.join @uri.host, @uri.path, 'index.html'
+        self.base_directory = Dir.getwd
         self.metadata = {}
         self.images = []
         self.images_content = {}
