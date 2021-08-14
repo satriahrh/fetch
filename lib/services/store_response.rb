@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'json'
+
 module Fetch
   module Service
     # StoreResponse is base class of storing/caching
@@ -7,29 +9,24 @@ module Fetch
     class StoreResponse < Fetch::Service::Base
       def before_process
         raise 'response body is empty' unless
-          @resource.content
+          @resource&.content&.to_html
       end
 
       def process
-        relative_dirname, filename = File.split @resource.relative_filepath
-        base_relative_directory = @resource.base_directory
-        relative_dirname.split('/').each do |dirname|
-          base_relative_directory = File.join base_relative_directory, dirname
-          Dir.mkdir base_relative_directory unless Dir.exist? base_relative_directory
-        end
-
-        absolute_filepath = File.join base_relative_directory, filename
-        # write file
-        File.delete absolute_filepath if File.exist? absolute_filepath
-        file = File.new(absolute_filepath, File::CREAT | File::RDWR, 777)
-        file.write(data)
-        file.close
+        Fetch::Helper::StoreToFile.new(
+          @resource.relative_filepath,
+          @resource.content.to_html,
+          @resource.base_directory
+        )
       end
 
-      protected
-
-      def data
-        @resource.content.to_html
+      def after_process
+        relative_dir, _ = File.split @resource.relative_filepath
+        Fetch::Helper::StoreToFile.new(
+          'meta.json',
+          JSON.generate(@resource.metadata),
+          File.join(@resource.base_directory, relative_dir)
+        )
       end
     end
   end

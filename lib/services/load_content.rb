@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 require 'base64'
+require 'concurrent'
 require 'net/http'
 require 'nokogiri'
 require 'uri'
+require 'json'
 
 module Fetch
   module Service
@@ -30,7 +32,7 @@ module Fetch
           @imgs[src] += 1
         end
         @resource.images = @doc_imgs
-        @resource.metadata[:num_images] = @imgs.length
+        @resource.metadata["num_images"] = @imgs.length
       end
 
       def collect_links
@@ -45,9 +47,10 @@ module Fetch
         end
 
         @resource.links = @doc_links
-        @resource.metadata[:num_links] = @links.length
+        @resource.metadata["num_links"] = @links.length
       end
     end
+
     # LoadHTMLFromServer is to fetch the content from given URI
     class LoadHTMLFromServer < Fetch::Service::LoadHTML
       def before_process
@@ -63,7 +66,7 @@ module Fetch
           @resp.instance_of? Net::HTTPOK
 
         @resource.content = @resp.body
-        @resource.metadata[:last_fetch] = Time.now
+        @resource.metadata["last_fetch"] = Time.now
       end
     end
 
@@ -74,11 +77,14 @@ module Fetch
       end
 
       def process
-        filepath = File.join(@resource.base_directory, @resource.relative_filepath)
-        File.open filepath, 'r' do |file|
+        html_filepath = File.join(@resource.base_directory, @resource.relative_filepath)
+        File.open html_filepath, 'r' do |file|
           @resource.content = file.read
-          @resource.metadata[:last_fetch] = file.birthtime
         end
+
+        meta_dir, _ = File.split html_filepath
+        meta_filepath = File.join meta_dir, 'meta.json'
+        @resource.metadata = JSON.load_file(meta_filepath)
       end
     end
 
@@ -89,19 +95,26 @@ module Fetch
       end
 
       def process
+        wg = Fetch::Helper::WaitGroup.new
         @resource.content.search('img').each do |image|
           next if data_uri?(image['src]'])
 
           image_uri = image['src']
-          unless URI::DEFAULT_PARSER.make_regexp(%w[http https]).match? image_uri
-            image_uri = URI.join("#{@resource.uri.scheme}://#{@resource.uri.host}", image_uri)
-          else
-            image_uri = URI.parse image_uri
-          end
+          image_uri = if URI::DEFAULT_PARSER.make_regexp(%w[http https]).match? image_uri
+                        URI.parse image_uri
+                      else
+                        URI.join("#{@resource.uri.scheme}://#{@resource.uri.host}", image_uri)
+                      end
 
-          image_content = Net::HTTP.get_response(image_uri)
-          image['src'] = "data:#{image_content.content_type};base64,#{Base64.strict_encode64(image_content.body)}"
+          Thread.new do
+            wg.add 1
+            image_content = Net::HTTP.get_response(image_uri)
+            image['src'] = "data:#{image_content.content_type};base64,#{Base64.strict_encode64(image_content.body)}"
+          ensure
+            wg.done
+          end.run
         end
+        wg.wait
       end
 
       def after_process

@@ -27,11 +27,11 @@ module Fetch
       end
 
       def uri=(new_value)
-        if [URI::HTTPS, URI::HTTP].include? new_value.class
-          @uri = new_value
-        else
-          @uri = URI.parse new_value
-        end
+        @uri = if [URI::HTTPS, URI::HTTP].include? new_value.class
+                 new_value
+               else
+                 URI.parse new_value
+               end
 
         raise Fetch::Error::ResourceInvalidURI unless
           [URI::HTTPS, URI::HTTP].include? @uri.class

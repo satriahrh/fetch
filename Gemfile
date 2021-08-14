@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 
 ruby '3.0.2'
 
+gem 'concurrent-ruby', require: 'concurrent'
 gem 'nokogiri'
 
 group :development do

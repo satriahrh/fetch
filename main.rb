@@ -18,17 +18,17 @@ rescue Fetch::Error::ResourceInvalidURI => e
   Fetch::Error.exit_with_message "Invalid uri for \"#{uri}\", #{e.message}"
 end
 
-if ARGV[0] == '--metadata'
-  services = [
-    Fetch::Service::LoadHTMLFromCache
-  ]
-else
-  services = [
-    Fetch::Service::LoadHTMLFromServer,
-    Fetch::Service::LoadImages,
-    Fetch::Service::StoreResponse
-  ]
-end
+services = if ARGV[0] == '--metadata'
+             [
+               Fetch::Service::LoadHTMLFromCache
+             ]
+           else
+             [
+               Fetch::Service::LoadHTMLFromServer,
+               Fetch::Service::LoadImages,
+               Fetch::Service::StoreResponse
+             ]
+           end
 
 resources.each do |resource|
   services.each do |service|
@@ -37,7 +37,7 @@ resources.each do |resource|
   end
   puts "#{resource.uri}\n" \
     + "\tcache file path\t\t: #{File.join resource.base_directory, resource.relative_filepath}\n" \
-    + "\tnumber of links\t\t: #{resource.metadata[:num_links]}\n" \
-    + "\tnumber of images\t: #{resource.metadata[:num_images]}\n" \
-    + "\tlast fetch\t\t: #{resource.metadata[:last_fetch]}\n"
+    + "\tnumber of links\t\t: #{resource.metadata["num_links"]}\n" \
+    + "\tnumber of images\t: #{resource.metadata["num_images"]}\n" \
+    + "\tlast fetch\t\t: #{resource.metadata["last_fetch"]}\n"
 end
