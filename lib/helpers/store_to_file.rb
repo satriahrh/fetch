@@ -17,7 +17,9 @@ module Fetch
         absolute_dir = @base_dir
         relative_dir.split('/').each do |dir|
           absolute_dir = File.join absolute_dir, dir
-          Dir.mkdir absolute_dir unless Dir.exist? absolute_dir
+          Dir.mkdir absolute_dir
+        rescue Errno::EEXIST
+          next
         end
 
         absolute_filepath = File.join absolute_dir, filename
