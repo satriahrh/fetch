@@ -30,14 +30,22 @@ services = if ARGV[0] == '--metadata'
              ]
            end
 
+wg = Fetch::Helper::WaitGroup.new
 resources.each do |resource|
-  services.each do |service|
-    service_with_resource = service.new(resource)
-    resource = service_with_resource.run
-  end
-  puts "#{resource.uri}\n" \
-    + "\tcache file path\t\t: #{File.join resource.base_directory, resource.relative_filepath}\n" \
-    + "\tnumber of links\t\t: #{resource.metadata['num_links']}\n" \
-    + "\tnumber of images\t: #{resource.metadata['num_images']}\n" \
-    + "\tlast fetch\t\t: #{resource.metadata['last_fetch']}\n"
+  Thread.new do
+    wg.add 1
+    services.each do |service|
+      service_with_resource = service.new(resource)
+      resource = service_with_resource.run
+    end
+    puts "#{resource.uri}\n" \
+      + "\tcache file path\t\t: #{File.join resource.base_directory, resource.relative_filepath}\n" \
+      + "\tnumber of links\t\t: #{resource.metadata['num_links']}\n" \
+      + "\tnumber of images\t: #{resource.metadata['num_images']}\n" \
+      + "\tlast fetch\t\t: #{resource.metadata['last_fetch']}\n"
+  ensure
+    wg.done
+  end.run
 end
+
+wg.wait
